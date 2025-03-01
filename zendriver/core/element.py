@@ -728,6 +728,10 @@ class Element:
     async def focus(self):
         """focus the current element. often useful in form (select) fields"""
         return await self.apply("(element) => element.focus()")
+    
+    async def blur(self):
+        """blur the current element. it used as a function agains the focus function; you use this function to 'unfocus' and element"""
+        return await self.apply("(element) => element.blur()")
 
     async def select_option(self):
         """
