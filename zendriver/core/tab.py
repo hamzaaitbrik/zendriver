@@ -255,7 +255,7 @@ class Tab(Connection):
 
         tagname = tagname.strip().lower() if tagname else None
         attrs = {k.strip(): v.strip() for k, v in attrs.items()} if attrs else None
-        text = text.strip() if text else None
+        text = text.strip().lower() if text else None
 
         if not text and not tagname and not attrs:
             raise ValueError(
@@ -306,7 +306,7 @@ class Tab(Connection):
 
         tagname = tagname.strip().lower() if tagname else None
         attrs = {k.strip(): v.strip() for k, v in attrs.items()} if attrs else None
-        text = text.strip() if text else None
+        text = text.strip().lower() if text else None
 
         if not text and not tagname and not attrs:
             # raising an error in case neither text nor tagname values were provided
@@ -472,7 +472,7 @@ class Tab(Connection):
                 not tagname
                 or (
                     elem.tag_name
-                    and tagname.strip().lower() == elem.tag_name.strip().lower()
+                    and tagname == elem.tag_name.strip().lower()
                 )
             )  # this condition evaluates to True if tagname was not provided; no filtering by tagname. Or if tagname equals our targeted element's tagname
 
@@ -493,11 +493,18 @@ class Tab(Connection):
 
             matches_text = (
                 not text
-                or (elem.text and text.strip().lower() in elem.text.strip().lower())
+                or (elem.text and text in elem.text.strip().lower())
             )  # this condition evaluates to True if text was not provided; no filtering by text. Or if text is in our targeted element's text
 
             # if all conditions match, add the element to the list of elements to return
             if matches_tagname and matches_attrs and matches_text:
+                # sometimes the parent element is preceived as the element holding the text content while it actually the child that does so, below is the code to handle that situation
+                if text and matches_text and elem.children: # we only check for children containing the text if text was provided and elem.children exists
+                    #if elem.children:
+                    for child in elem.children:
+                        if text in child.text:
+                            elem = child
+                            break
                 elements.append(elem)
                 if return_after_first_match:  # if return_after_first_match is True then we stop searching for other elements after finding one target element
                     stop_searching = (
