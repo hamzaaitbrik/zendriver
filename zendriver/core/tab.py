@@ -502,7 +502,7 @@ class Tab(Connection):
                 if text and matches_text and elem.children: # we only check for children containing the text if text was provided and elem.children exists
                     #if elem.children:
                     for child in elem.children:
-                        if text in child.text:
+                        if text in child.text.strip().lower():
                             elem = child
                             break
                 elements.append(elem)
